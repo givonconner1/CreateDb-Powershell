@@ -8,6 +8,8 @@
     [string]$filePath = (Get-Item -Path ".\" -Verbose).FullName
 )
 
+$ErrorActionPreference = "Stop"
+
 #Password Prompt
 $credential = Get-Credential "$userName"  #Change this when executing remotly
 $pass = $credential.GetNetworkCredential().password 
@@ -58,23 +60,32 @@ Function invokeSql($serverIp, $userName, $pass, $filePath, $sqlParam)
     invoke-sqlcmd -ServerInstance $serverIp -Username $userName -Password $pass -inputfile "$filePath\CreateSqlUser.sql" -variable $sqlParam
 }
 
-Function GetDevParam()
-{
+function GetDbParams($environment, $applicationName, $serverIp){
     
+    $params = @{
+        dbName = CreateDbName $environment $applicationName
+        user = CreateUsername $environment.ToLower().Trim() $applicationName.ToLower()
+        password = GenerateDbPassword
+        scriptParams = @("user = $($params.user)", "dbName = $($params.dbName)", "sqlPassword = $($params.password)")
+        serverIp = $serverIp
+    };
+    
+    return $params;
+
 }
 
-Function GetQaParam()
+
+Function MakeDb($dbType, $dbParams)
 {
-    
-}
+    #check if db exists
 
-Function MakeDb()
-{
-    # First check if DB exists
+    $theDatabaseName = $dbParams.dbName;
 
-    # If yes return (do nothing)
-
-    # if no create Db
+    invokeSql $dbParams.serverIp $userName $pass $filePath $dbParams.scriptParams;
+    saveDbPassword $dbParams.user $dbParams.password;
+    Write-Host "$dbType database: $dbParams.dbName" ;
+    Write-Host Username: $dbParams.user;
+    Write-Host Password: $dbParams.password;
 }
 #This is the do until loop
 do 
@@ -88,17 +99,11 @@ do
             # $parmas = GetDevParam();
             # MakeDb $params
 
-            clear
-            'You chose to create a DevCi database'
-            $devDb = CreateDbName $environmentDev $applicationName
-            $devUser = CreateUsername $environmentDev.ToLower().Trim() $applicationName.ToLower()
-            $devPwd = GenerateDbPassword
-            $sqlParametersDev = @("user = $devUser", "dbName = $devDb", "sqlPassword = $devPwd")
-            invokeSql $serverIpDev $userName $pass $filePath $sqlParametersDev
-            saveDbPassword $devUser $devPwd
-            Write-Host DevCi database: $devDb 
-            Write-Host Username: $devUser
-            Write-Host Password: $devPwd           
+            clear;
+            Write-Host 'You chose to create a DevCi database';
+
+            $params = GetDbParams $environmentDev $applicationName $serverIpDev;
+            MakeDb $environmentDev $params;
 
         }
         '2'{
@@ -108,16 +113,12 @@ do
 
             clear
             'You chose to create a Qa database'
-            $qaDb = CreateDbName $environmentQa $applicationName
-            $qaUser = CreateUsername $environmentQa.ToLower().Trim() $applicationName.ToLower()
-            $qaPwd = GenerateDbPassword
-            $sqlParametersQa = @("user = $qaUser", "dbName = $qaDb", "sqlPassword = $qaPwd")
-            invokeSql $serverIpQ $userName $pass $filePath $sqlParametersQa
-            saveDbPassword $qaUser $qaPwd
+            
+            clear
+            Write-Host 'You chose to create a DevCi database'
 
-            Write-Host Qa database: $qaDb
-            Write-Host Username: $qaUser
-            Write-Host Password: $qaPwd
+            $params = GetDbParams $environmentQa $applicationName $serverIpQa
+            MakeDb $environmentQa $params;
 
         }
         '3'{
