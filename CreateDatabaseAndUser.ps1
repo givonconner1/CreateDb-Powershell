@@ -1,4 +1,6 @@
-﻿##Paramaters
+﻿##Script to create db
+
+##Paramaters
 Param(
 	[Parameter(Mandatory=$true)][string]$applicationName,
     [string]$environmentDev = 'DEVCI',
