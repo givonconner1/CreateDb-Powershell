@@ -110,12 +110,8 @@ do
 
             # $parmas = GetQaParam();
             # MakeDb $params
-
             clear
-            'You chose to create a Qa database'
-            
-            clear
-            Write-Host 'You chose to create a DevCi database'
+            Write-Host 'You chose to create a QA database'
 
             $params = GetDbParams $environmentQa $applicationName $serverIpQa
             MakeDb $environmentQa $params;
@@ -128,34 +124,14 @@ do
             # MakeDb $Qaparmas
 
             clear
-            'You chose to create a DevCi and Qa Database'
+            Write-Host 'You chose to create a DevCi and Qa Database'
             ##Variables
-            $devDb = CreateDbName $environmentDev $applicationName
-            $qaDb = CreateDbName $environmentQa $applicationName
+            $paramsDev = GetDbParams $environmentDev $applicationName $serverIpDev;
+            MakeDb $environmentDev $paramsDev;
+            
+            $paramsQa = GetDbParams $environmentQa $applicationName $serverIpQa
+            MakeDb $environmentQa $paramsQa;
 
-            $devUser = CreateUsername $environmentDev.ToLower().Trim() $applicationName.ToLower()
-            $qaUser = CreateUsername $environmentQa.ToLower().Trim() $applicationName.ToLower()
-
-            $devPwd = GenerateDbPassword
-            $qaPwd = GenerateDbPassword
-
-
-            $sqlParametersDev = @("user = $devUser", "dbName = $devDb", "sqlPassword = $devPwd")
-            $sqlParametersQa = @("user = $qaUser", "dbName = $qaDb", "sqlPassword = $qaPwd")
-
-            invokeSql $serverIpDev $userName $pass $filePath $sqlParametersDev
-            invokeSql $serverIpQ $userName $pass $filePath $sqlParametersQa
-
-            saveDbPassword $devUser $devPwd
-            saveDbPassword $qaUser $qaPwd
-
-            Write-Host DevCi database: $devDb 
-            Write-Host Username: $devUser
-            Write-Host Password: $devPwd
-
-            Write-Host Qa database: $qaDb
-            Write-Host Username: $qaUser
-            Write-Host Password: $qaPwd
         }
         'q'{
             return
