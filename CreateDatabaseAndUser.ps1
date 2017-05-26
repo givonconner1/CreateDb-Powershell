@@ -58,6 +58,24 @@ Function invokeSql($serverIp, $userName, $pass, $filePath, $sqlParam)
     invoke-sqlcmd -ServerInstance $serverIp -Username $userName -Password $pass -inputfile "$filePath\CreateSqlUser.sql" -variable $sqlParam
 }
 
+Function GetDevParam()
+{
+    
+}
+
+Function GetQaParam()
+{
+    
+}
+
+Function MakeDb()
+{
+    # First check if DB exists
+
+    # If yes return (do nothing)
+
+    # if no create Db
+}
 #This is the do until loop
 do 
 {
@@ -66,6 +84,10 @@ do
     switch($input)
     {
         '1'{
+
+            # $parmas = GetDevParam();
+            # MakeDb $params
+
             clear
             'You chose to create a DevCi database'
             $devDb = CreateDbName $environmentDev $applicationName
@@ -76,10 +98,14 @@ do
             saveDbPassword $devUser $devPwd
             Write-Host DevCi database: $devDb 
             Write-Host Username: $devUser
-            Write-Host Password: $devPwd
+            Write-Host Password: $devPwd           
 
         }
         '2'{
+
+            # $parmas = GetQaParam();
+            # MakeDb $params
+
             clear
             'You chose to create a Qa database'
             $qaDb = CreateDbName $environmentQa $applicationName
@@ -95,6 +121,11 @@ do
 
         }
         '3'{
+            # $Devparmas = GetDevParam();
+            # $Qaparmas = GetQaParam();
+            # MakeDb $Devparmas
+            # MakeDb $Qaparmas
+
             clear
             'You chose to create a DevCi and Qa Database'
             ##Variables
