@@ -21,7 +21,6 @@ function Show-Menu
     )
     clear
     Write-Host "================= $Title ================="
-
     Write-Host "1: Press '1' to create a DevCi database"
     Write-Host "2: Press '2' to create a Qa database"
     Write-Host "3: Press '3' to create a DevCi and Qa Database"
