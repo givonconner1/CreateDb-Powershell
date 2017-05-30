@@ -73,13 +73,31 @@ function GetDbParams($environment, $applicationName, $serverIp){
 
 }
 
+Function DbExists($Database)
+{
+    $SQLResults = invoke-sqlcmd -ServerInstance "." -Username "sa" -Password "password" -Query "select name from sys.databases where name = '$Database'"  
+    if([string]::IsNullOrEmpty($SQLResults))
+    {
+	    return false;
+    }
+    else
+    {
+        return true;
+    } 
+
+}
 
 Function MakeDb($dbType, $dbParams)
 {
+
     #check if db exists
+    $exists = DbExists $dbParams.dbName;
 
-   # $theDatabaseName = $dbParams.dbName;
-
+    if($exists)
+    {
+        return;
+    }
+    
     invokeSql $dbParams.serverIp $userName $pass $filePath $dbParams.scriptParams;
     saveDbPassword $dbParams.user $dbParams.password;
     Write-Host "$dbType database: $dbParams.dbName";
@@ -103,22 +121,14 @@ do
 
         }
         '2'{
-
-            # $parmas = GetQaParam();
-            # MakeDb $params
             clear
             Write-Host 'You chose to create a QA database'
 
-            $params = GetDbParams $environmentQa $applicationName $serverIpQa
-            MakeDb $environmentQa $params;
+            $param = GetDbParams $environmentQa $applicationName $serverIpQa
+            MakeDb $environmentQa $param;
 
         }
         '3'{
-            # $Devparmas = GetDevParam();
-            # $Qaparmas = GetQaParam();
-            # MakeDb $Devparmas
-            # MakeDb $Qaparmas
-
             clear
             Write-Host 'You chose to create a DevCi and Qa Database'
             ##Variables
