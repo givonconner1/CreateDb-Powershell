@@ -62,12 +62,12 @@ Function invokeSql($serverIp, $userName, $pass, $filePath, $sqlParam)
 function GetDbParams($environment, $applicationName, $serverIp){
     
     $params = @{
-        dbName = CreateDbName $environment $applicationName
-        user = CreateUsername $environment.ToLower().Trim() $applicationName.ToLower()
-        password = GenerateDbPassword
-        scriptParams = @("user = $($params.user)", "dbName = $($params.dbName)", "sqlPassword = $($params.password)")
-        serverIp = $serverIp
+        dbName = CreateDbName $environment.ToUpper() $applicationName;
+        user = CreateUsername $environment.ToLower().Trim() $applicationName.ToLower().Trim();
+        password = GenerateDbPassword;        
+        serverIp = $serverIp;        
     };
+    $params.scriptParams = @("user = $($params.user)", "dbName = $($params.dbName)", "sqlPassword = $($params.password)");
     
     return $params;
 
@@ -78,11 +78,11 @@ Function MakeDb($dbType, $dbParams)
 {
     #check if db exists
 
-    $theDatabaseName = $dbParams.dbName;
+   # $theDatabaseName = $dbParams.dbName;
 
     invokeSql $dbParams.serverIp $userName $pass $filePath $dbParams.scriptParams;
     saveDbPassword $dbParams.user $dbParams.password;
-    Write-Host "$dbType database: $dbParams.dbName" ;
+    Write-Host "$dbType database: $dbParams.dbName";
     Write-Host Username: $dbParams.user;
     Write-Host Password: $dbParams.password;
 }
@@ -95,14 +95,11 @@ do
     {
         '1'{
 
-            # $parmas = GetDevParam();
-            # MakeDb $params
-
             clear;
             Write-Host 'You chose to create a DevCi database';
 
-            $params = GetDbParams $environmentDev $applicationName $serverIpDev;
-            MakeDb $environmentDev $params;
+            $param = GetDbParams $environmentDev $applicationName $serverIpDev;
+            MakeDb $environmentDev $param;
 
         }
         '2'{
