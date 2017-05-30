@@ -2,7 +2,7 @@
 	[Parameter(Mandatory=$true)][string]$applicationName,
     [string]$environmentDev = 'DEVCI',
     [string]$environmentQa  = 'QA',
-    [string]$serverIpDev = '.',
+    [string]$serverIpDev = '.', 
     [string]$serverIpQa = '.',
     [string]$userName = 'sa',
     [string]$filePath = (Get-Item -Path ".\" -Verbose).FullName
@@ -59,7 +59,8 @@ Function invokeSql($serverIp, $userName, $pass, $filePath, $sqlParam)
     invoke-sqlcmd -ServerInstance $serverIp -Username $userName -Password $pass -inputfile "$filePath\CreateSqlUser.sql" -variable $sqlParam
 }
 
-function GetDbParams($environment, $applicationName, $serverIp){
+function GetDbParams($environment, $applicationName, $serverIp)
+{
     
     $params = @{
         dbName = CreateDbName $environment.ToUpper() $applicationName;
@@ -78,11 +79,12 @@ Function DbExists($Database)
     $SQLResults = invoke-sqlcmd -ServerInstance "." -Username "sa" -Password "password" -Query "select name from sys.databases where name = '$Database'"  
     if([string]::IsNullOrEmpty($SQLResults))
     {
-	    return false;
+	    return $false;
     }
     else
     {
-        return true;
+        Write-Host "The Database $Database already exists"
+        return $true;
     } 
 
 }
@@ -95,6 +97,7 @@ Function MakeDb($dbType, $dbParams)
 
     if($exists)
     {
+       
         return;
     }
     
@@ -118,6 +121,7 @@ do
 
             $param = GetDbParams $environmentDev $applicationName $serverIpDev;
             MakeDb $environmentDev $param;
+            
 
         }
         '2'{
@@ -126,17 +130,19 @@ do
 
             $param = GetDbParams $environmentQa $applicationName $serverIpQa
             MakeDb $environmentQa $param;
+            
 
         }
         '3'{
             clear
             Write-Host 'You chose to create a DevCi and Qa Database'
-            ##Variables
+
             $paramsDev = GetDbParams $environmentDev $applicationName $serverIpDev;
             MakeDb $environmentDev $paramsDev;
             
             $paramsQa = GetDbParams $environmentQa $applicationName $serverIpQa
             MakeDb $environmentQa $paramsQa;
+            
 
         }
         'q'{
