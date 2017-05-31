@@ -74,9 +74,9 @@ function GetDbParams($environment, $applicationName, $serverIp)
 
 }
 
-Function DbExists($Database)
+Function DbExists($serverIp, $Database, $userName, $pass)
 {
-    $SQLResults = invoke-sqlcmd -ServerInstance "." -Username "sa" -Password "password" -Query "select name from sys.databases where name = '$Database'"  
+    $SQLResults = invoke-sqlcmd -ServerInstance $serverIp -Username $userName -Password $pass -Query "select name from sys.databases where name = '$Database'"  
     if([string]::IsNullOrEmpty($SQLResults))
     {
 	    return $false;
