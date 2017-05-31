@@ -121,6 +121,7 @@ do
 
             $param = GetDbParams $environmentDev $applicationName $serverIpDev;
             MakeDb $environmentDev $param;
+            return;
             
 
         }
@@ -130,7 +131,7 @@ do
 
             $param = GetDbParams $environmentQa $applicationName $serverIpQa
             MakeDb $environmentQa $param;
-            
+            return;
 
         }
         '3'{
@@ -142,7 +143,7 @@ do
             
             $paramsQa = GetDbParams $environmentQa $applicationName $serverIpQa
             MakeDb $environmentQa $paramsQa;
-            
+            return;
 
         }
         'q'{
