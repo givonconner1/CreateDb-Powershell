@@ -74,7 +74,7 @@ function GetDbParams($environment, $applicationName, $serverIp)
 
 }
 
-Function DbExists($serverIp, $Database, $userName, $pass)
+Function DbExists($Database, $serverIp, $userName, $pass)
 {
     $SQLResults = invoke-sqlcmd -ServerInstance $serverIp -Username $userName -Password $pass -Query "select name from sys.databases where name = '$Database'"  
     if([string]::IsNullOrEmpty($SQLResults))
@@ -89,11 +89,11 @@ Function DbExists($serverIp, $Database, $userName, $pass)
 
 }
 
-Function MakeDb($dbType, $dbParams)
+Function MakeDb($dbType, $dbParams, $serverIp, $userName, $pass)
 {
 
     #check if db exists
-    $exists = DbExists $dbParams.dbName;
+    $exists = DbExists $dbParams.dbName $serverIp $userName $pass;
 
     if($exists)
     {
@@ -103,7 +103,7 @@ Function MakeDb($dbType, $dbParams)
     
     invokeSql $dbParams.serverIp $userName $pass $filePath $dbParams.scriptParams;
     saveDbPassword $dbParams.user $dbParams.password;
-    Write-Host "$dbType database: $dbParams.dbName";
+    Write-Host $dbType database: $dbParams.dbName;
     Write-Host Username: $dbParams.user;
     Write-Host Password: $dbParams.password;
 }
@@ -120,7 +120,7 @@ do
             Write-Host 'You chose to create a DevCi database';
 
             $param = GetDbParams $environmentDev $applicationName $serverIpDev;
-            MakeDb $environmentDev $param;
+            MakeDb $environmentDev $param $serverIp $userName $pass;
             return;
             
 
@@ -130,7 +130,7 @@ do
             Write-Host 'You chose to create a QA database'
 
             $param = GetDbParams $environmentQa $applicationName $serverIpQa
-            MakeDb $environmentQa $param;
+            MakeDb $environmentQa $param $serverIp $userName $pass;
             return;
 
         }
@@ -139,10 +139,10 @@ do
             Write-Host 'You chose to create a DevCi and Qa Database'
 
             $paramsDev = GetDbParams $environmentDev $applicationName $serverIpDev;
-            MakeDb $environmentDev $paramsDev;
+            MakeDb $environmentDev $paramsDev $serverIp $userName $pass;
             
             $paramsQa = GetDbParams $environmentQa $applicationName $serverIpQa
-            MakeDb $environmentQa $paramsQa;
+            MakeDb $environmentQa $paramsQa $serverIp $userName $pass;
             return;
 
         }
