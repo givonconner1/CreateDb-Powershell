@@ -1,8 +1,3 @@
--- Replace $(application) for the username. This MUST be all lowercase with NO spaces
--- Replace $(dbName) with the name of the db
--- Replace the $(Environment) with either DEVCI or QA in lowercase
-
-
 --REPLACE C: with F: when transferring to Azure
 
 CREATE DATABASE [$(dbName)]
