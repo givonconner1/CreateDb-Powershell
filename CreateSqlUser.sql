@@ -107,45 +107,23 @@ GO
 ALTER DATABASE [$(dbName)] SET  READ_WRITE 
 GO
 
-
-
-
-
---Undo this once the db is creating. 
-
-
-
-
-
-
 USE [master]
 GO
 
 CREATE LOGIN [$(user)] WITH PASSWORD=N'$(sqlPassword)', DEFAULT_DATABASE=[master], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
 GO
 
---Add the Connect SQL function
 USE [master]
 GO
 
 GRANT CONNECT SQL TO [$(user)]
 GO
-
---Create db user 
-	--This cannot be switched on until the db script is run, to create the db. 
 	
 use $(dbName)
 GO
 CREATE USER [$(user)] FOR LOGIN [$(user)]
 GO
-
-	--set user as db_owner
-
-
 USE $(dbName)
 GO
 ALTER ROLE [db_owner] ADD MEMBER [$(user)]
 GO
-
-
-
