@@ -39,7 +39,7 @@ Function CreateUsername($environment, $applicationName)
     return "$environment-$applicationName user" -replace '\s',''
 }
 
-#Create the db passwords (if I assign a variable of $sqlPassword to the GenerateDbPassword function can I merger SaveDb and this function?)
+#Create the db passwords
 Function GenerateDbPassword()
 {
     return -join ((65..90) + (97..122) | Get-Random -Count 28 | % {[char]$_})
